@@ -1,18 +1,41 @@
 const EventEmitter = require('events');
+const events = new EventEmitter();
+const path = require('path');
 
-const eventEmition = () => {
-    // Initializing event emitter instances
-    var eventEmitter = new EventEmitter();
+const IOService = require('./io.service');
 
-    // Registering to myEvent
-    eventEmitter.on('myEvent', (msg) => {
-        console.log(msg)
-    })
+events.on('read', (fileIndex) => {
+    try {
+        const readData = IOService.readFile(`file${fileIndex}.txt`);
+        if (readData) {
+            events.emit('write', { data: readData, fileIndex: fileIndex });
+        }
+    } catch (error) {
+        console.log(error);
+    }
+})
 
-    // Triggering myEvent
-    eventEmitter.emit('myEvent', "First event");
+events.on('write', ({ data, fileIndex }) => {
+    try {
+        const writeData = IOService.writeFile(data);
+        if (fileIndex != 10) {
+            events.emit('read', ++fileIndex)
+        }
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+const manageEvents = () => {
+    try {
+        // Starting the events
+        events.emit('read', 1);
+    } catch (error) {
+        return { error: error }
+    }
 }
 
-module.exports={
-    eventEmition
+module.exports = {
+    // eventEmition,
+    manageEvents
 }

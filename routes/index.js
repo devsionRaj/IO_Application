@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const EventEmitterService = require('../services/events.service');
+const EventsService = require('../services/events.service');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -14,12 +14,26 @@ router.get('/checkEventEmitter', (req, res) => {
   try {
     EventEmitterService.eventEmition();
     res.status(200).json({
-      message:'Event emitter executed successfully'
+      message: 'Event emitter executed successfully'
     })
   } catch (error) {
     res.status(400).json({
       message: 'Event emitter execution failed!',
       error: error
+    })
+  }
+})
+
+router.get('/startIOTask', async (req, res) => {
+  try {
+    EventsService.manageEvents();
+    res.status(200).json({
+      message: 'IO Task executing successfully!'
+    })
+  } catch (error) {
+    res.status(400).json({
+      message: 'Failed to execute the IO Task',
+      response: error
     })
   }
 })
